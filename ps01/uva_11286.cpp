@@ -2,28 +2,48 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <utility>
 
 using namespace std;
 
-int generate_key(vector<int> v);
+long generate_key(vector<int> v);
 
 int main(){
 	int i;
 	for(cin >> i; i != 0 && !cin.eof(); cin >> i) {
 
-		map<int, int> m;
+		map<long, int> m;
 
 		while(i--) {
 		vector <int> comb(5);
 		cin >> comb[0] >> comb[1] >> comb[2] >> comb[3] >> comb[4];
 		sort(comb.begin(), comb.end());
-		int key = generate_key(comb);
+		long key = generate_key(comb);
 
-		if(m.find(key) == m.end())
-			m[key] = 1;
-		else
-			m[key] ++;
+		m[key] ++;
 		}
+
+		int max = 0, tie = 1;
+		for(pair<long, int> el : m) {
+			if(el.second > max) {
+				max = el.second;
+				tie = 1;
+			} else if(el.second == max) 
+				tie++;
+		}
+
+		cout << tie * max << endl;
 	}
 }
+
+long generate_key(vector<int> v) {
+	long res = 0;
+	for(int a : v) {
+		res <<= 9;
+		res += a;
+	}
+//		cout << res << endl;
+	return res;
+}
+
 
