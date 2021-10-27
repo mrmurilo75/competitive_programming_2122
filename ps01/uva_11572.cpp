@@ -1,32 +1,36 @@
 #include <iostream>
 #include <map>
-#include <set>
 
 using namespace std;
 
 int main(){
-	int cases;
-	cin >> cases;
-	while(cases--) {
-		int n;
-		cin >> n;
-		int sf[n + 1], beginning = 1, size = 0, maximum = 0;
-		sf[0] = 0;
-		map<int, int> last_pos;
-		for(int i = 1; i < n +1; i++) {
-			cin >> sf[i];
-			if(!last_pos[sf[i]]) { // aka last_pos of sf[i] is 0 (NULL) so its new
-				last_pos[sf[i]] = i;
-				size++;
-			} else if (last_pos[sf[i]] >= beginning) { // if sf[i] not new && last_pos of sf[i] is being accounted 
-				if(size > maximum)
-					maximum = size; // see if current size is a max
+	int tests;
+	cin >> tests;
+	while(tests--) {
+		int amount_sf, size_sf;
+		cin >> amount_sf;
+		int sfId[ (size_sf = amount_sf +1) ], cur_begin = 1, maximum = 0, cur_sf_pos;
+		map<int, int> sfId_to_lastPos;
+		for(cur_sf_pos = 1; cur_sf_pos < size_sf; cur_sf_pos++) {
+			cin >> sfId[cur_sf_pos];
+			if( !sfId_to_lastPos[ sfId[cur_sf_pos] ] ) {
+				// sfId is new
+				sfId_to_lastPos[ sfId[cur_sf_pos] ] = cur_sf_pos;
+			} else {
+				if(sfId_to_lastPos[ sfId[cur_sf_pos] ] >= cur_begin) {
+					// is in counting range
+					if(maximum < (cur_sf_pos - cur_begin) )
+						maximum = (cur_sf_pos - cur_begin);
 
-				beginning = last_pos[sf[i]] +1; // continue for right after the repetition
-				size = i - last_pos[sf[i]]; // update size
+					cur_begin = sfId_to_lastPos[ sfId[cur_sf_pos] ] +1;
+				}
+
+				sfId_to_lastPos[ sfId[cur_sf_pos] ] = cur_sf_pos;
 			}
+
 		}
+		if(maximum < (cur_sf_pos - cur_begin) )
+			maximum = (cur_sf_pos - cur_begin);
 		cout << maximum << endl;
 	}
 }
-
