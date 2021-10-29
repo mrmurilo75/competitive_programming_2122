@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int fill_min_dists(vector<int> &input, vector<int> &result);
+int fill_min_dists(int size, vector<int> &input, vector<int> &result);
 
 bool put_cows(int x, vector<int> &dists, int n_cows);
 
@@ -24,32 +24,49 @@ int main(){
 				last_stall = stalls_pos[i];
 		}
 		sort(stalls_pos.begin(), stalls_pos.end());
-		int min_dist = fill_min_dists(n_stalls, stalls_pos, stalls_dist), 
-		    max_dist = last_stall - first_stall, 
-		    middle = min_dist + (max_dist - min_dist)/2;
+		int min_dist = fill_min_dists(n_stalls, stalls_pos, stalls_dists), 
+			max_dist = last_stall - first_stall, 
+			middle = min_dist + (max_dist - min_dist)/2;
+
+		/*
+		for(int dist : stalls_pos) 
+			cout << " " << dist;
+		cout << endl;
+		for(int dist : stalls_dists) 
+			cout << " " << dist;
+		cout << endl;
+		cout <<"\t"<< min_dist << " " << max_dist << " " << middle << endl;
+		*/
+
 		while(min_dist < max_dist) {
-			if(put_cows(middle, stalls_pos, n_cows))
+			if(put_cows(middle, stalls_dists, n_cows))
 				min_dist = middle;
 			else
 				max_dist = middle - 1;
+
+			if(max_dist - min_dist == 1)
+				middle = min_dist + 1;
+			else 
+				middle = min_dist + (max_dist - min_dist)/2;
 		}
+		cout << min_dist << endl;
 	}
 
 }
 
 bool put_cows(int x, vector<int> &dists, int n_cows) {
 	n_cows--;
+	int sum = 0;
 	for(int dist : dists) {
+		sum += dist;
+		if(sum < x) 
+			continue;
+
+		n_cows--;
 		if(!n_cows) 
 			return true;
-		sum += dist;
-		if(sum >= x) {
-			n_cows--;
-			sum = 0;
-		}
+		sum = 0;
 	}
-	if(!n_cows)
-		return true;
 	return false;
 }
 
@@ -62,7 +79,4 @@ int fill_min_dists(int size, vector<int> &input, vector<int> &result) {
 	}
 	return min;
 }
-
-
-
 
