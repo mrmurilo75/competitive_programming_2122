@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <vector>
 #include <cstring>
 
 template<typename Val, typename SizeOfSize>
@@ -9,19 +10,50 @@ public:
 	SizeOfSize range_start, range_end;
 	SegmentNode parent, right, left;
 
-	SegmentNode
-	
+	SegmentNode(SegmentNode right, SegmentNode left) {
+		this.right = right;
+		this.left = left;
+		this.range_start = right.range_start;
+		this.range_end = left.range_end;
+
+		this.value = this.compute();
+		update_request = false;
+	}
+
+	SegmentNode(SizeOfSize position, Val value) {
+		this.range_start = position;
+		this.range_end = position;
+		this.value = value;
+
+		this.right = nullptr;
+		this.left nullptr;
+		update_request = false;
+	}
+
+
+
 
 }
 
-template<typename T>
+template<typename Val, typename SizeOfSize>
 class SegmentTree {
 public:
-	public:
-	SegmentNode<T> root;
+	SizeOfSize size;
+	vector< SegmentNode<Val> > leaf_array;
+	SegmentNode<Val> root;
 
-	SegmentTree() {
+	SegmentTree(SizeOfSize size){
+		this.size = size;
+
+		leaf_array = new vector<Val>(size);
+
+		root = nullptr;
 	}
+
+	bool putLeaf(SizeOfSize position, Val value){
+		leaf_array[position] = new SegmentNode<Val>(position, value);
+	}
+
 }
 
 
@@ -88,7 +120,7 @@ int main() {
 	}
 }
 
-//*
+/*
 	char op[MAX_BUF];
 	int c = 0;
 
@@ -110,4 +142,4 @@ int main() {
 			update(1, 1, sizeN, a, b);	
 		}
 	}
-//*/
+// */
