@@ -5,19 +5,19 @@
 template<typename Val, typename SizeOfSize>
 class SegmentNode {
 public:
-	bool update_request;
+	map<SizeOfSize, Val> update_request;	// update request and value to put
 	Val value;
 	SizeOfSize range_start, range_end;
 	SegmentNode parent, right, left;
 
-	SegmentNode(SegmentNode right, SegmentNode left) {
-		this.right = right;
+	SegmentNode(SegmentNode left, SegmentNode right) {
 		this.left = left;
-		this.range_start = right.range_start;
-		this.range_end = left.range_end;
+		this.right = right;
+		this.range_start = left.range_start; 	// build top to bottom, so left is smaller
+		this.range_end = right.range_end;
 
-		this.value = this.compute();
-		update_request = false;
+		this.value = this.compute(left.value, right.value);
+		update_request = nullptr;
 	}
 
 	SegmentNode(SizeOfSize position, Val value) {
@@ -25,11 +25,18 @@ public:
 		this.range_end = position;
 		this.value = value;
 
-		this.right = nullptr;
 		this.left nullptr;
-		update_request = false;
+		this.right = nullptr;
+		update_request = nullptr;
 	}
 
+	Val compute(Val a, Val b) {
+		return a * b; 		// process
+	}
+
+	SegmentNode<Val, SizeOfSize> buildParent(SegmentNode<Val, SizeOfSize> left) {
+		return ( this.parent = right.parent = new SegmentNode<Val, SizeOfSize>(left, this) );
+	}
 
 
 
@@ -52,6 +59,51 @@ public:
 
 	bool putLeaf(SizeOfSize position, Val value){
 		leaf_array[position] = new SegmentNode<Val>(position, value);
+
+		// create tree
+		queue<SegmentNode> nodeQ[2];
+
+			// second layer created as leaf are inputed
+		if(position % 2 && position) {		// making top to bottom, so even numbers are is right
+			nodeQ[0].push( leaf_array[position].buildParent(leaf_array[position-1]) );
+		}
+			// other layers are create on last leaf input [ OBS.: this can be optimized using recursion to create upper layer as leafs are input, and it is garanteed that there will be more leafs than height (2^n > n, duh) but too complicateds ]
+		if(position == size-1) {
+			if(! (position % 2) )
+				nodeQ[0].push( leaf_array[position] );
+
+			char cur = 1, next_layer = 0;
+			int qSize, s;
+			while( (qSize = nodeQ[next_layer].size()) && qSize != 1 ) {	// cur is garanteed to be empty, if next_layer is only one node it is root
+				next_layer = cur;
+				cur = 1-cur;
+				while( (qSize = nodeQ[cur].size()) ) {
+					if(qSize == 1) { 
+						nodeQ[next_layer].push(nodeQ[cur].front());
+						nodeQ[cur].pop();
+						break;
+					}
+					auto left = nodeQ[cur].front(); nodeQ[cur].pop();
+					auto right = nodeQ[cur].front(); nodeQ[cur].pop();
+					nodeQ[next_layer].push( leaf_array[position].buildParent(leaf_array[position-1]) );
+				}
+			}
+			this.root = nodeQ[next_layer].front();
+		}
+
+	}
+
+	void printLeveld() {
+		// print each level on a line
+
+##CONTINUE
+
+	}
+	
+	bool build(){
+	}
+
+	void update(SizeOfSize position, Val new_value) {
 	}
 
 }
@@ -104,9 +156,17 @@ int main() {
 
 	cin >> sizeN >> queriesK;
 
-	int arr[sizeN];
-	for(int i =0; i<sizeN; i++)
-		cin >> arr[i];
+	SegmentTree<char, int> seg_tree(sizeN);
+	for(int i =0; i<sizeN; i++) {
+		char input;
+		cin >> input;
+
+		if(input) input = ( (input>0)? 1 : -1 );	// input processing
+
+		seg_tree.putLeaf(i, input);
+	}
+	
+	seg_tree.build();
 
 	char seg_tree[4*sizeN];
 
@@ -121,25 +181,11 @@ int main() {
 }
 
 /*
-	char op[MAX_BUF];
-	int c = 0;
-
-	scanf("%d", &sizeN);
-	if (c>0) putchar('\n');
-	printf("Case %d:\n", ++c);
-	for (int i=1; i<=sizeN; i++) scanf("%d", &v[i]);
-
-	build(1, 1, sizeN);
-
-	while (1) {
-		scanf("%s", op);
-		if (strcmp(op, "END")==0) break;
-		int a, b;
-		scanf("%d %d", &a, &b);
-		if (op[0]=='M') {
-			printf("%d\n", query(1, 1, sizeN, a, b));
-		} else {
-			update(1, 1, sizeN, a, b);	
-		}
-	}
+ * Note: 
+ * 	Lazy updates
+ * 	Put a update_pair on root; // each update_pair is <position, new_value>
+ * 	when on a query, check if range bounds ceiling/floor are in the update map
+ * 	if yes, then you gotta go down and update and so on
+ * 	if no, then move update_map into the node that you are NOT descending (and reset this.update_map = nullpttr)
+ *
 // */
