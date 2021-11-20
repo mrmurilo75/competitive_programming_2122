@@ -2,65 +2,38 @@
 #include <vector>
 #include <unordered_map>
 #include <utility>
+#pragma GCC optimize("Ofast")
 
-using namespace std;
-
-int max(int a, int b) {
-	return (a > b)? a : b;
-}
-
+        int n, q, in, begin, end, i, j, val_end, val_begin, count, val;
 int main(){
-	int n, q;
-	for(cin >> n >> q; n != 0 && cin.good(); cin >> n >> q){
-		//cout << "n " << n << " q " << q << endl;
-
-		vector<int> values(n);
-		unordered_map< int, pair<int, int> > map;
-
-		int in, begin = 0, end = 0;
-		cin >> in;
-		values[end] = in;
-		//cout << " " << values[end];
-		for(end =1; end < n; end++) {
-			cin >> in;
-			values[end] = in;
-			//cout << " " << values[end];
-
-			if(values[end] != values[end-1]) {
-				map.emplace(values[end-1], pair<int, int>(begin, end));
-				begin = end;
-			}
-		}
-		map.emplace(values[end-1], pair<int, int>(begin, end));
-		//cout<<endl;
-
-		while(q--) {
-			int i, j;
-			cin >> i >> j;
-			//cout << "i " << i << " j " << j << endl;
-
-			int val, val_end = i, val_begin = i, count = 0;
-			while(val_end < j) {
-				// check the value in i (for first)
-				val = values[val_begin];
-				auto val_range = map.find(val)->second; 	// pair<begin, end> (or <i, end> for first)
-				val_end = val_range.second;
-				
-				if(val_end > j)
-					val_end = j;
-				//cout << "[" << val_begin << " " << val_end << "] " << val_end - val_begin << endl;
-
-				count = max(val_end - val_begin, count);
-
-				val_begin = val_end;
-
-				// 	count = i - value(end)
-				// repeat for value in value(end) as count2
-				// count = max(count, count2)
-			}
-			cout << count << endl;
-		}
-	}
-
+        for(std::cin >> n >> q; n != 0 && std::cin.good(); std::cin >> n >> q){
+                std::vector<int> values(n);
+                std::unordered_map< int, std::pair<int, int> > map;
+                begin = 0;
+                std::cin >> in;
+                values[0] = in;
+                for(end =1; end < n; end++) {
+                        std::cin >> in;
+                        values[end] = in;
+                        if(values[end] != values[end-1]) {
+                                map.emplace(values[end-1], std::pair<int, int>(begin, end));
+                                begin = end;
+                        }
+                }
+                map.emplace(values[end-1], std::pair<int, int>(begin, end));
+                while(q--) {
+                        std::cin >> i >> j;
+                        val_end = i, val_begin = i, count = 0;
+                        while(val_end < j) {
+                                val_end = (map.find(values[val_begin])->second).second;
+                                if(val_end > j)
+                                        val_end = j;
+                                if(val_end - val_begin > count)
+                                        count = val_end - val_begin;
+                                val_begin = val_end;
+                        }
+                        std::cout << count << std::endl;
+                }
+        }
 }
 
