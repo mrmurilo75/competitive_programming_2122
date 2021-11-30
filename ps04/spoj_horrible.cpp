@@ -10,18 +10,18 @@ int size;
 
 void FenwickTree(int n) {
 	size = n + 1;
-	memset(bit0, 0, size + 2);
-	memset(bit1, 0, size + 2);
+	memset(bit0, 0, sizeof bit0);
+	memset(bit1, 0, sizeof bit1);
 }
 
-void add(long long bit[], int end, int incr) {
+void add(long long bit[], int end, long long incr) {
 	while(end <= size) {
 		bit[end] += incr;
 		end += end & -end;
 	}
 }
 
-void range_add(int start, int end, int incr) {
+void range_add(int start, int end, long long incr) {
 	add(bit0, start, incr);
 	add(bit0, end +1, -incr);
 	add(bit1, start, incr *(start -1));
@@ -45,7 +45,8 @@ long long range_sum(int start, int end) {
 	return prefix_sum(end) - prefix_sum(start -1);
 }
 
-int casesT, sizeN, commandsC, startP, endQ, valueV, queryQ, command;
+int casesT, sizeN, commandsC, startP, endQ, queryQ, command;
+long long valueV;
 
 int main() {
 	scanf("%d", &casesT);
@@ -62,17 +63,16 @@ int main() {
 			//cout << command << endl;
 
 			if(!command) {
-				scanf("%d%d%d", &startP, &endQ, &valueV);
+				scanf("%d%d%lld", &startP, &endQ, &valueV);
 				//cout <<"l "<< startP <<"\tr "<< endQ <<"\tv "<< valueV <<endl;
 
-				--startP; --endQ;
 				range_add( startP, endQ, valueV);
 			} else {
 				scanf("%d%d", &startP, &endQ);
 				//cout << startP <<" "<< endQ << " -> ";
 
-				--startP; --endQ;
 				printf("%lld\n", range_sum( startP, endQ));
+				fflush(stdout);
 			}
 		}
 	}
