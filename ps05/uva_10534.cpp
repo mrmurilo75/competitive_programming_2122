@@ -22,7 +22,6 @@ int sizeN, count[MAX][2];
 int main() {
 
 	for(cin >> sizeN; !cin.eof(); cin >> sizeN) {
-		//cout <<"\n----------\n"<< sizeN << endl;
 
 		int result =0, waivo =0;
 
@@ -32,61 +31,46 @@ int main() {
 		bellow.emplace(LLONG_MAX,0);
 		above.emplace(LLONG_MAX,0);
 
-		//cout << "bellow: " << endl;
 		for(int i=0; i<sizeN; i++) {
 			cin >> og[i];
-			//cout << " " << og[i] << "\t";
 
 			auto floor = bellow.lower_bound(og[i]), cur = floor, next = floor;
-			--floor;
-			count[i][BELLOW] = value(floor)+1;
-			if( key(cur) == og[i] ) {
+			--floor; // get actual floor
+
+			count[i][BELLOW] = value(floor)+1; // cur count value
+
+			if( key(cur) == og[i] ) { // remove key if exists bc of stdlib bug
 				next++;
-				//cout << "e " << key(cur) <<","<< value(cur) <<"\n\t";
 				bellow.erase(cur);
 			}
-			if( value(next) <= count[i][BELLOW] && value(next) ) {
-				//cout << "e " << key(next) <<","<< value(next) <<"\n\t";
+
+			if( value(next) <= count[i][BELLOW] && value(next) ) { // if next has bigger key but count is the sameor less --> rm bc we would never use it
 				bellow.erase(next);
 			}
-			//cout << key(floor) << ", " << value(floor) << "\t";
-			//cout << og[i] << ", " << count[i][BELLOW];
-			bellow.emplace_hint(floor, og[i], count[i][BELLOW]); // (*floor).second
-			//cout  << endl;
+
+			bellow.emplace_hint(floor, og[i], count[i][BELLOW]); 
 		}
-		//cout << endl;
-		//cout << "above" << endl;
-		for(int i=sizeN-1; i>=0; i--) {
-			//cout << " " << og[i] << "\t";
+
+		for(int i=sizeN-1; i>=0; i--) { // same as for bellow, but going from last to first
 
 			auto floor = above.lower_bound(og[i]), cur = floor, next = floor;
 			--floor;
 			count[i][ABOVE] = value(floor)+1;
 			if( key(cur) == og[i] ) {
 				next++;
-				//cout << "e " << key(cur) <<","<< value(cur) <<"\n\t";
 				above.erase(cur);
 			}
 			if( value(next) <= count[i][ABOVE] && value(next) ) {
-				//cout << "e " << key(next) <<","<< value(next) <<"\n\t";
 				above.erase(next);
 			}
-			//cout << key(floor) << ", " << value(floor) << "\t";
-			//cout << og[i] << ", " << count[i][ABOVE];
-			above.emplace_hint(floor, og[i], count[i][ABOVE]); // (*floor).second
-			//cout  << endl;
+			above.emplace_hint(floor, og[i], count[i][ABOVE]); 
 		}
 
-		//cout << "\nres" << endl;
-		for(int i=0; i<sizeN; i++) {
+		for(int i=0; i<sizeN; i++) { // get maximum waivo from results
 			auto ceiling = count[i][ABOVE], floor = count[i][BELLOW];
-			//cout << og[i] <<"\t"<< floor <<"\t"<< ceiling << "\t=> ";
 
 			waivo = min(ceiling, floor);
-			//cout << waivo << " ==> ";
-			// result = max(result, waivo + ((waivo %2)? 0:1) );
 			result = max(result, (2* waivo -1) );
-			//cout << result << endl;
 		}
 
 		cout << result << endl;
