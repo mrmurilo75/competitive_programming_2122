@@ -26,6 +26,8 @@ int main() {
 		int result =0, waivo =0;
 
 		map<long long, int> above, bellow;
+		above.clear();
+		bellow.clear();
 		bellow.emplace(0,0);
 		above.emplace(0,0);
 		bellow.emplace(LLONG_MAX,0);
@@ -75,6 +77,6 @@ int main() {
 
 		cout << result << endl;
 	}
-	cout << endl;
+	//cout << endl;
 }
 
