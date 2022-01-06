@@ -11,20 +11,39 @@ using namespace std;
 
 int N, W, H;
 char states[1024][1024];
+char states[1024][1024];
 
 bool sort_states(pair<char, int> a, pair<char, int> b){
     return (a.second == b.second)? a.first<b.first : a.second>b.second;
 }
 
-void process_p(stack< pair< int, int > > &stac, pair< int, int > &p, int x, int y) {
+void process_p(stack< pair< int, int > > &stac, pair< int, int > &p, int x, int y, char og) {
     int a = p.first+x, b = p.second+y;
 
-    if(states[a][b] != 0 && 
-            states[a][b] == states[p.first][p.second]) {
+    if(states[a][b] == og) {
 
         states[a][b] = 0;
         stac.emplace(a, b);
     }
+}
+
+void print_state() {
+    for(int i=0; i<=H+1; i++) {
+        for(int j=0; j<=W+1; j++) {
+            if(states[i][j] == 0)
+                cout << "0 ";
+            else
+                cout << states[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+void print_count(vector< pair<char, int> > &count) {
+    for(int i=0; i<26; i++)
+        printf("%c ", 'a' +i);
+    for(int i=0; i<26; i++)
+        printf("%d ", (count[i]).second );
 }
 
 int main() {
@@ -39,20 +58,13 @@ int main() {
             for(int j=1; j<=W; j++) 
                 cin >> states[i][j];
 
-        for(int i=0; i<=H+1; i++) {
-            for(int j=0; j<=W+1; j++) {
-                if(states[i][j] == 0)
-                    cout << "0 ";
-                else
-                    cout << states[i][j] << " ";
-            }
-            cout << endl;
-        }
+        print_state();
 
         vector< pair<int, char> > hash_count(26);
         for(int i=0; i<26; i++)
             hash_count[i] = make_pair('a'+i, 0);
 
+        print_count(hash_count);
 
         stack< pair<int, int> > stac;
 
@@ -61,24 +73,28 @@ int main() {
             for (int j=1; j<=W; j++) {
                 // printf("ff %d %d \t%c\t%d\n", i, j, states[i][j]);
 
-                if (states[i][j]) {
-                    (hash_count[ states[i][j] -'a' ]).second += 1;
+                if (!states[i][j])
+                    continue;
 
-                    stac.emplace(i, j);
-                    states[i][j] = 0;
+                (hash_count[ states[i][j] -'a' ]).second += 1;
+                print_count(hash_count);
 
-                    while (!stac.empty()) {
-                        pair<int, int> p = stac.top();
-                        stac.pop();
+                stac.emplace(i, j);
+                char og = states[i][j];
+                states[i][j] = 0;
 
-                        process_p(stac, p, -1,  0);
-                        process_p(stac, p,  1,  0);
-                        process_p(stac, p,  0,  1);
-                        process_p(stac, p,  0, -1);
+                while (!stac.empty()) {
+                    pair<int, int> p = stac.top();
+                    stac.pop();
 
+                    cout << "processing " << og << endl;
+                    print_state();
+                    print_count(hash_count);
 
-                    }
-
+                    process_p(stac, p, -1,  0, og);
+                    process_p(stac, p,  1,  0, og);
+                    process_p(stac, p,  0,  1, og);
+                    process_p(stac, p,  0, -1, og);
                 }
 
             }
