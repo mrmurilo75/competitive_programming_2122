@@ -11,28 +11,42 @@ using namespace std;
 
 int N, W, H;
 char states[1024][1024];
-bool visited[1024][1024];
 
 bool sort_states(pair<char, int> a, pair<char, int> b){
     return (a.second == b.second)? a.first<b.first : a.second>b.second;
 }
 
+void process_p(stack< pair< int, int > > &stac, pair< int, int > &p, int x, int y) {
+    int a = p.first+x, b = p.second+y;
+
+    if(states[a][b] != 0 && 
+            states[a][b] == states[p.first][p.second]) {
+
+        states[a][b] = 0;
+        stac.emplace(a, b);
+    }
+}
+
 int main() {
-    memset(states, 0, sizeof states);
-    memset(visited, 0, sizeof visited);
+    memset(states,      0, sizeof states);
 
     scanf("%d", &N);
     for(int n=1; n<=N; n++) {
         scanf("%d%d ", &H, &W);
-        // cout<<H<<" "<<W<<endl;
+        cout<<H<<" "<<W<<endl;
 
-        for(int i=1; i<=H; i++) {
-            for(int j=1; j<=W; j++) {
+        for(int i=1; i<=H; i++) 
+            for(int j=1; j<=W; j++) 
                 cin >> states[i][j];
 
-                // cout << states[i][j] << " ";
+        for(int i=0; i<=H+1; i++) {
+            for(int j=0; j<=W+1; j++) {
+                if(states[i][j] == 0)
+                    cout << "0 ";
+                else
+                    cout << states[i][j] << " ";
             }
-            // cout << endl;
+            cout << endl;
         }
 
         vector< pair<int, char> > hash_count(26);
@@ -42,43 +56,27 @@ int main() {
 
         stack< pair<int, int> > stac;
 
-        // printf("i j \tstate\tvisited \n");
+        // printf("i j \tstate \n");
         for(int i=1; i<=H; i++) {
             for (int j=1; j<=W; j++) {
-                // printf("ff %d %d \t%c\t%d\n", i, j, states[i][j], visited[i][j]);
+                // printf("ff %d %d \t%c\t%d\n", i, j, states[i][j]);
 
-                if (states[i][j] && !visited[i][j]) {
+                if (states[i][j]) {
                     (hash_count[ states[i][j] -'a' ]).second += 1;
 
                     stac.emplace(i, j);
-                    visited[i][j] = true;
+                    states[i][j] = 0;
 
                     while (!stac.empty()) {
                         pair<int, int> p = stac.top();
                         stac.pop();
 
-                        for(int s=-1; s<=1; s+=2) {
-                            int a = p.first+s, b = p.second;
+                        process_p(stac, p, -1,  0);
+                        process_p(stac, p,  1,  0);
+                        process_p(stac, p,  0,  1);
+                        process_p(stac, p,  0, -1);
 
-                            if(states[a][b] && 
-                                    !visited[a][b] && 
-                                    states[a][b] == states[p.first][p.second]) {
 
-                                visited[a][b] = true;
-                                stac.emplace(a, b);
-                            }
-                        }
-                        for(int s=-1; s<=1; s+=2) {
-                            int a = p.first, b = p.second+s;
-
-                            if(states[a][b] && 
-                                    !visited[a][b] && 
-                                    states[a][b] == states[p.first][p.second]) {
-
-                                visited[a][b] = true;
-                                stac.emplace(a, b);
-                            }
-                        }
                     }
 
                 }
