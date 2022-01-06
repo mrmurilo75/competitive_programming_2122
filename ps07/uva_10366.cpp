@@ -11,7 +11,6 @@ using namespace std;
 
 int N, W, H;
 char states[1024][1024];
-char states[1024][1024];
 
 bool sort_states(pair<char, int> a, pair<char, int> b){
     return (a.second == b.second)? a.first<b.first : a.second>b.second;
@@ -28,6 +27,7 @@ void process_p(stack< pair< int, int > > &stac, pair< int, int > &p, int x, int 
 }
 
 void print_state() {
+    cout << endl;
     for(int i=0; i<=H+1; i++) {
         for(int j=0; j<=W+1; j++) {
             if(states[i][j] == 0)
@@ -37,13 +37,17 @@ void print_state() {
         }
         cout << endl;
     }
+    cout << endl;
 }
 
 void print_count(vector< pair<char, int> > &count) {
     for(int i=0; i<26; i++)
         printf("%c ", 'a' +i);
+    cout << endl;
     for(int i=0; i<26; i++)
         printf("%d ", (count[i]).second );
+    cout << endl;
+    cout << endl;
 }
 
 int main() {
@@ -52,19 +56,21 @@ int main() {
     scanf("%d", &N);
     for(int n=1; n<=N; n++) {
         scanf("%d%d ", &H, &W);
-        cout<<H<<" "<<W<<endl;
+        // cout<<H<<" "<<W<<endl;
 
         for(int i=1; i<=H; i++) 
             for(int j=1; j<=W; j++) 
                 cin >> states[i][j];
 
-        print_state();
+        // print_state();
 
-        vector< pair<int, char> > hash_count(26);
+        vector< pair<char, int> > hash_count(26);
         for(int i=0; i<26; i++)
             hash_count[i] = make_pair('a'+i, 0);
 
-        print_count(hash_count);
+        // print_count(hash_count);
+
+        // cout << "-----------------inited" << endl;
 
         stack< pair<int, int> > stac;
 
@@ -76,20 +82,20 @@ int main() {
                 if (!states[i][j])
                     continue;
 
-                (hash_count[ states[i][j] -'a' ]).second += 1;
-                print_count(hash_count);
 
                 stac.emplace(i, j);
                 char og = states[i][j];
+                // cout << "\nprocessing " << og << endl;
+                (hash_count[ og -'a' ]).second += 1;
+
                 states[i][j] = 0;
 
                 while (!stac.empty()) {
                     pair<int, int> p = stac.top();
                     stac.pop();
 
-                    cout << "processing " << og << endl;
-                    print_state();
-                    print_count(hash_count);
+                    // print_state();
+                    // print_count(hash_count);
 
                     process_p(stac, p, -1,  0, og);
                     process_p(stac, p,  1,  0, og);
