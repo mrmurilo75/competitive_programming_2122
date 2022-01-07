@@ -5,11 +5,6 @@
 
 #define MAX_OUT 10000
 
-#define units(A) (A%10)
-#define tens(A) ((A%100)/10)
-#define hundreds(A) ((A%1000)/100)
-#define thousands(A) (A/1000)
-
 using namespace std;
 
 bool is_prime[MAX_OUT];
@@ -27,7 +22,7 @@ bool process_digit(int A, queue<int> &q, int digit) {
 
 
     for(int i=0; i<10; ++i, A+=digit) {
-            // cout <<digit*i<< "\t" << A <<endl;
+        // cout <<digit*i<< "\t" << A <<endl;
         if(is_prime[A] && !visited[A]){
             visited[A] = true;
             q.emplace(A);
@@ -92,14 +87,14 @@ int main() {
 
     // input
     scanf("%d", &N);
-    cout << N << endl;
+    // cout << N << endl;
     while(N--) {
         scanf("%d%d", &A, &B);
-        cout << A <<" "<< B << endl;
+        // cout << A <<" "<< B << endl;
 
         // process
         memset(visited, false, sizeof visited);
-        memset(visited, true, (sizeof(int))*1000);
+        memset(visited, true, (sizeof(bool))*1000);
         queue<int> q;
 
         visited[A] = true;
@@ -109,8 +104,8 @@ int main() {
         int res = 0;
 
         if(A != B) {
-            if( (res = bfs(0, q)) )
-                print_trace();
+            ( (res = bfs(0, q)) );
+                //print_trace();
 
         }
 
