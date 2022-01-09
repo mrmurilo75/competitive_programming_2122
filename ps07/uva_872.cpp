@@ -14,6 +14,7 @@ map< char, set<char> > constraints;
 set<char> variables;
 vector< string > results;
 
+// do a recursive DFS keeping tabs if all constraints have been met (when we add a letter we remove if from the constraints lists where applicable, if there are no constraints recursive DFS)
 void dfs(string s, set<char> &remaining, map<char, set<char> > &constraints) {
     // cout << s << endl;
     // cout << "re: "; for(char var : remaining) // cout << var << " ";
