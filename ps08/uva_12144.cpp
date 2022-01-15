@@ -5,13 +5,10 @@
 #include <queue>
 #include <climits>
 #include <cstring>
-#include <stack>
 #include <vector>
 #include <map>
 
-#define DBG2 (true && DBG)
 #define DBG  false
-#define dbg2 if(DBG && DBG2)cout
 #define dbg  if(DBG)cout
 
 using namespace std;
@@ -20,23 +17,23 @@ int N, M, start, dest, u, v, p;
 
 vector< map<int, int> > adj;
 vector< int > distances;
-vector< stack < pair<int,int> > > paths;
+vector< multimap<int, int> > parents;
 
-void print_path(stack< pair<int,int> > path, int i) {
+void print_path(int i) {
     if(DBG) {
         cout <<" "<< i<<endl;
-        while(!path.empty()){ 
-            pair<int, int> p = path.top();
-            cout  <<"'-> "<< p.second << endl;
-            path.pop();
+        for(auto p : parents[i]){ 
+            cout <<" '-> "<< p.second <<" (" << p.first<< ")\n\t";
+            print_path(p.second);
         }
+        cout <<endl;
     }
 }
 
 const int INF = INT_MAX;
-void djikstra(int start, vector< map<int, int> > & adj, vector< int > & distances, vector< stack < pair<int, int> > > & paths) {
+void djikstra(int start, vector< map<int, int> > & adj, vector< int > & distances, vector< multimap<int, int> > & parents) {
     bool processed[distances.size() +1] = {false};
-    priority_queue< pair< int, int > > q;
+    priority_queue< pair<int, int> > q;
 
     fill(distances.begin(), distances.end(), INF);
 
@@ -44,38 +41,31 @@ void djikstra(int start, vector< map<int, int> > & adj, vector< int > & distance
     q.push({0,start});
 
     while (!q.empty()) {
-        if(DBG && DBG2) {
+        if(DBG) {
             cout << endl;
             for(int d : distances) cout << d << endl;
         }
 
-        int u = q.top().second;
+        int from = q.top().second;
         q.pop();
 
-        if(DBG && DBG2)  {
-            cout << endl;
-            for(int i=0; i<N; i++)
-                for(pair<int, int> p : adj[i]) 
-                    cout <<" "<< i <<" - "<< p.second <<" -> "<< p.first << endl;
-        }
+        print_path(dest);
 
-        if (processed[u]) 
+        if (processed[from]) 
             continue;
-        processed[u] = true;
+        processed[from] = true;
 
-        for (auto p : adj[u]) {
-            int v = p.first, w = p.second;
-            dbg<<endl;
-            if(DBG) print_path(paths[u], u);
+        for (auto p : adj[from]) {
+            int to = p.first, w = p.second;
 
-            if (distances[u]+w < distances[v]) {
-                distances[v] = distances[u]+w;
-                if(!paths[v].empty()) paths[v].pop();
-                paths[v].emplace(u, v);
-                q.emplace(-distances[v],v);
+            if (distances[from]+w < distances[to]) {
+                distances[to] = distances[from]+w;
+                parents[to].emplace(distances[from]+w, from);
+
+                q.emplace(-distances[to],to);
             }
-            else if (distances[u]+w == distances[v]) {
-                paths[v].emplace(u, v);
+            else if (distances[from]+w == distances[to]) {
+                parents[to].emplace(distances[from]+w, from);
             }
         }
     }
@@ -84,32 +74,38 @@ void djikstra(int start, vector< map<int, int> > & adj, vector< int > & distance
         for(int d : distances) cout << d << endl;
 
         for(int i=0; i<N; i++)
-            print_path(paths[i], i);
+            print_path(i);
         cout <<"---"<< endl;
     }
 
 }
 
-void trace_back(stack< pair<int,int> > path) {
-        while(!path.empty()) {
-            pair<int,int> cur = path.top();
-            path.pop();
+void trace_back(int to) {
+    dbg << "tracing" <<endl;
 
-            adj[cur.first].erase(cur.second);
+    multimap<int,int> & path = parents[to]; 
 
-            trace_back(paths[cur.first]);
-        }
+    auto smallest = (*path.begin());
+    for(auto p : parents[to]) {
+        if(p.first != smallest.first) return;
+
+        adj[p.second].erase(to);
+        dbg << "adj[ "<< p.second <<" ].er( "<<to<<" )  "<<adj[p.second].count(to)<<endl;
+
+        trace_back(p.second);
+    }
 }
 
 int main(){
+
+    dbg << "start" << endl;
 
     cin >> N >> M;
     dbg << N <<" "<< M <<endl;
 
     while(N && M) {
-        bool shortest = true;
         adj.clear();
-        paths.clear();
+        parents.clear();
         distances.clear();
 
         cin >> start >> dest;
@@ -117,7 +113,7 @@ int main(){
 
         for(int n=0; n<N; n++) {
             adj.emplace_back();
-            paths.emplace_back();
+            parents.emplace_back();
             distances.emplace_back();
         }
 
@@ -126,19 +122,26 @@ int main(){
 
             adj[u][v] = p;
 
-            dbg2 << u <<" - "<< p <<" -> "<< v<<endl;
+            dbg << u <<" - "<< p <<" -> "<< v<<endl;
         }
         dbg << endl;
 
-        djikstra(0, adj, distances, paths);
+        djikstra(start, adj, distances, parents);
 
-        if(shortest) { 
-            trace_back(paths[dest]);
-            shortest = false;
+        dbg << "end first dijk"<<endl;
+
+        trace_back(dest);
+
+        parents.clear();
+        distances.clear();
+        for(int n=0; n<N; n++) {
+            parents.emplace_back();
+            distances.emplace_back();
         }
 
-        djikstra(0, adj, distances, paths);
+        djikstra(start, adj, distances, parents);
 
+        dbg <<"output: ";
         cout << ( (distances[dest] != INT_MAX)? distances[dest] : -1) <<endl;
 
         cin >> N >> M;
