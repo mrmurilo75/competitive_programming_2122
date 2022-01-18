@@ -38,6 +38,8 @@ bool dfs(int x, int y, int cur_len){
             if(dfs( (x +xi), (y +yi), cur_len ))
                 return true;
 
+    b_visited[x][y] = false;
+
     dbg << endl;
     return false;
 }
