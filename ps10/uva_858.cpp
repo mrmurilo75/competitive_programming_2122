@@ -1,18 +1,19 @@
-/*
- * a brute force solution would be to get each of the lines that make a vertice and then for e
- *
- */
 #include <iostream>
 #include <cstdio>
 #include <utility>
+#include <cmath>
+#include <vector>
+#include <string>
+#include <set>
 
-#define DBG true
+#define DBG false
 #define dbg if(DBG)cout
 
 #define get_start(vec)  vec.first
-#define get_end  (vec)  vec.second
+#define get_end(vec)  vec.second
 #define get_x(p)        p.first
 #define get_y(p)        p.second
+
 #define flip(b) (b = !b)
 
 using namespace std;
@@ -20,11 +21,41 @@ using namespace std;
 typedef pair< double, double > point;
 typedef pair< pair<double, double>, pair<double, double> > vecAB;
 
-point get_intersection(vecAB & AB, vecAB CD) {
+double determinant(point & A, point & B) {
+    return A.first * B.second - A.second * B.first;
+}
+
+bool is_in_path(vecAB & AB, double x) {
+    return (AB.first.first < x && AB.second.first > x) || (AB.second.first < x && AB.first.first > x);
+}
+
+point * get_intersection(point * result, vecAB & AB, vecAB & CD) {
+    if(!is_in_path(AB, CD.first.first)) {
+        result->first = result->second = -1;
+        return result;
+    }
+
+
+    point x_diff = make_pair( get_x(get_start(AB)) - get_x(get_end(AB)), get_x(get_start(CD)) - get_x(get_end(CD)) ),
+            y_diff = make_pair( get_y(get_start(AB)) - get_y(get_end(AB)), get_y(get_start(CD)) - get_y(get_end(CD)) );
+
+    double det = determinant(x_diff, y_diff);
+
+    if(!det) {
+        result->first = result->second = -1;
+        return result;
+    }
+
+    point det_p = make_pair(determinant(AB.first, AB.second), determinant(CD.first, CD.second));
+
+    result->first = (determinant(det_p, x_diff) / det);
+    result->second = (determinant(det_p, y_diff) / det);
+    return result;
+
     /*
-def line_intersection(line1, line2):
-    xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
-    ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
+def line_intersection(AB, CD):
+    xdiff = A_x - B_x, C_x - D_x
+    ydiff = A_y - B_y, C_y - D_y
 
     def det(a, b):
         return a[0] * b[1] - a[1] * b[0]
@@ -33,48 +64,24 @@ def line_intersection(line1, line2):
     if div == 0:
        raise Exception('lines do not intersect')
 
-    d = (det(*line1), det(*line2))
+    d = (det(*AB), det(*CD))
     x = det(d, xdiff) / div
     y = det(d, ydiff) / div
     return x, y
     */
-/*
-    const double A_x = AB.first.first,
-                A_y = AB.first.second,
-                B_x = AB.second.first,
-                B_y = AB.second.second,
-                C_x = CD.first.first,
-                C_y = CD.first.second,
-                D_x = CD.second.first,
-                D_y = CD.second.second;
-
-    double AB_x_diff = (A_x - B_x
-
-    double a = B_x * (C_y - A_y)       - B_y * (C_x - A_x),
-           b = B_x * (C_y + D_y - A_y) - B_y * (C_x + D_x - A_x),
-           c = D_x * (A_y - C_y)       - D_y * (A_x - C_x),
-           d = D_x * (A_y + B_y - C_y) - D_y * (A_x  + B_x - C_x);
-
-    return (a*b <= 0) && (c*d <= 0);
-*/
-    return make_pair(0.0, 0.0);
-}
-
-bool is_in_vec(vecAB & AB, point & p) {
-    return lines_cross(AB, make_pair(p,p));
 }
 
 double euclidean_distance(point & a, point & b) {
     return sqrt((double)(a.first - b.first) * (a.first - b.first) + (a.second - b.second) * (a.second - b.second));
 }
 
-string vec_to_str(vecAB & ab) {
-    cout << to_str(ab.first) <<"->"<< to_str(ab.second);
+string to_str(point & p) {
+    cout << "("<< p.first <<" "<< p.second <<")";
     return "";
 }
 
-string to_str(point & p) {
-    cout << "("<< p.first <<" "<< p.second <<")";
+string vec_to_str(vecAB & ab) {
+    cout << to_str(ab.first) <<"->"<< to_str(ab.second);
     return "";
 }
 
@@ -83,7 +90,6 @@ double px, py, max_y, result;
 vector< point > points;
 vecAB path;
 set< double > intersections;
-bool b;
 
 int main(){
 
@@ -93,7 +99,6 @@ int main(){
         points.clear();
         max_y = 0;
         intersections.clear();
-        b = true;
         result = 0;
 
         cin >> N;
@@ -104,35 +109,48 @@ int main(){
             points.emplace_back(px, py);
             max_y = max(max_y, py);
 
-            dbg << to_str(points[n]);
+            dbg << to_str(points[n]) <<endl;
         }
+        //dbg <<"max_y " << max_y <<endl;
 
         cin >> tresh >> eval_x;
         dbg << "tresh " << tresh <<"\neval "<< eval_x <<endl;
 
         path = make_pair(make_pair(eval_x, 0), make_pair(eval_x, max_y));
-        intersections.emplace(0.0);
-        intersections.emplace(max_y);
+        dbg <<"path "<< vec_to_str(path) <<endl;
 
-        for(int n=1; n<N; n++) {
-            point intersection = get_intersection( make_pair(points[n-1], points[n]), path );
+        for(int n=1; n<=N; n++) {
+            vecAB cur;
+            if(n == N)
+                cur = make_pair(points[n-1], points[0]);
+            else
+                cur = make_pair(points[n-1], points[n]);
+            dbg << vec_to_str(cur) <<endl;
+
+            point intersection = make_pair(-1, -1);
+            get_intersection(&intersection, cur, path );
+            dbg <<"\t"<< to_str(intersection) <<endl;
 
             if( intersection.first < 0 || intersection.second < 0 ) continue;
 
+            dbg <<"\tY" <<endl;
             intersections.emplace(intersection.second);
 
         }
+        dbg<<endl;
 
-        for(auto *cur = intersections.begin();
+        for(auto cur = intersections.begin();
                 cur != intersections.end();) {
-            auto *prev = cur;
-            cur++;
-            if(cur == intersections.end())
+            auto start = cur++, end = cur++;
+
+            if(start == intersections.end() || end == intersections.end())
                 break;
 
-            if(flip(b))
-                result += *cur - *prev;
+            dbg << result << " += " << *end <<" - "<< *start <<endl;
+
+            result += *end - *start;
         }
+        dbg << result <<endl;
 
         cout << ( (result >= tresh)? "YES" : "NO" ) << endl;
 
