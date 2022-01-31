@@ -1,0 +1,24 @@
+You are trying to figure out a way to travel back in time to a specific year. The problem is that time traveling is a series of jumps through wormholes, so you may need to do many jumps, each with a resulting difference in time from where you started.
+
+## Input
+
+The first line of input is the number of test cases (T <= 100). For each test case, the following lines contain the year you are (0 < Y < 10000), the year you are trying to jump to (0 < Z < 10000), and the number of possible jumps N (0 < N < 1000). The next N lines contain integers 1 <= A, B <= 1000 representing a path from A to B and a difference of time -500 <= W <= 500, in the format A W B.
+
+## Output
+
+For each test case, print one line with "YES" or "NO" if it is or not possible to travel to that year.
+
+## Example
+
+#Input
+
+2
+2022
+2019
+
+
+#Output
+
+YES
+NO
+
