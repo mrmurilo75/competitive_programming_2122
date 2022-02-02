@@ -1,4 +1,5 @@
-/* A friend sent me the base for this code, bc I was having some trouble with the vertices and edges, and I tried to do it using pair and etc. after re-writing this code I got the idea and am pretty sure I could Also do it by myself. 
+/*
+ * This was a especially difficult one for me, so I need the help of a friend who helped me develop this code based on his previous answer.
  * 
  * */
 
