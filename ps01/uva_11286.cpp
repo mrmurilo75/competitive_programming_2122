@@ -9,20 +9,27 @@ using namespace std;
 long generate_key(vector<int> v);
 
 int main(){
-	int i;
-	for(cin >> i; i != 0 && !cin.eof(); cin >> i) {
 
+    // input
+	int i;
+
+	for(cin >> i; i != 0 && !cin.eof(); cin >> i) {
 		map<long, int> m;
 
 		while(i--) {
 		vector <int> comb(5);
+
 		cin >> comb[0] >> comb[1] >> comb[2] >> comb[3] >> comb[4];
+
 		sort(comb.begin(), comb.end());
+
 		long key = generate_key(comb);
 
 		m[key] ++;
+
 		}
 
+    // process
 		int max = 0, tie = 1;
 		for(pair<long, int> el : m) {
 			if(el.second > max) {
@@ -32,6 +39,7 @@ int main(){
 				tie++;
 		}
 
+    // output
 		cout << tie * max << endl;
 	}
 }

@@ -19,30 +19,43 @@ void battle(short green, short blue, pair<short, short> &result) {
 }
 
 int main(){
+
+    // input
 	int tests;
+
 	cin >> tests;
 	while(tests--) { 
 		int bfs, size_g, size_b;
+
 		cin >> bfs >> size_g >> size_b;
 		priority_queue<short> green_powers, blue_powers;
+
 		while(size_g--) {
 			short gp;
+
 			cin >> gp;
 			green_powers.emplace(gp);
 		}
+
 		while(size_b--) {
 			short bp;
+
 			cin >> bp;
 			blue_powers.emplace(bp);
 		}
+
+    // process
 		while( !(blue_powers.empty() || green_powers.empty()) ) { 
 			int min = (blue_powers.size() < green_powers.size())? blue_powers.size() : green_powers.size(); 
+
 			if(bfs > min) bfs = min;
 			pair<short, short> results[bfs];
+
 			for(int i = 0; i < bfs; i++) {
 				battle(green_powers.top(), blue_powers.top(), results[i]);
 				green_powers.pop(); blue_powers.pop();
 			}
+
 			for(int i = 0; i < bfs; i++) {
 				if(results[i].first == 1)
 					green_powers.push(results[i].second);
@@ -51,6 +64,8 @@ int main(){
 				// else both died
 			}
 		}
+
+    // output
 		if(blue_powers.empty()) {
 			if(green_powers.empty())
 				cout << "green and blue died\n";
