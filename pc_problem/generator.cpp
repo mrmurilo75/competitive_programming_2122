@@ -36,7 +36,7 @@ bool vec_differs(vector< int > & a, vector< int > & b) {
 int main(){
     srand(time(0));
 
-    int T_out = (rand() % T_MAX) + T_MIN;
+    int T_out = (rand() % (T_MAX - T_MIN)) + T_MIN;
     cout << T_out << "\n";
 
     T = T_out;
@@ -45,15 +45,15 @@ int main(){
         distances.clear();
         nodes.clear();
 
-        int N_out = (rand() % N_MAX) + N_MIN;
+        int N_out = (rand() % (N_MAX - N_MIN)) + N_MIN;
         cout << N <<"\n";
 
         N = N_out;
         for(int n=0; n<N; n++) {
             int A_out, W_out, B_out;
-            A_out = (rand() % A_MAX) + A_MIN;
-            W_out = (rand() % W_MAX) + W_MIN;
-            B_out = (rand() % B_MAX) + B_MIN;
+            A_out = (rand() % (A_MAX - A_MIN)) + A_MIN;
+            W_out = (rand() % (W_MAX - W_MIN)) + W_MIN;
+            B_out = (rand() % (B_MAX - B_MIN)) + B_MIN;
             cout << A << " " << W << " " << B << "\n";
 
             A = A_out; W = W_out; B = B_out;
