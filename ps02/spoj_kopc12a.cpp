@@ -12,22 +12,29 @@ void eval_bottom(int &cur_bottom, long long &cur_bottom_cost, int eval, long lon
 void middle_up(vector<int> &h, vector<int> &c, int &cur_bottom, long long &cur_bottom_cost, int min, int max, int &middle, long long &middle_cost);
 
 int main(){
+
 	int cases;
+
 	cin >> cases;
 	while(cases--) {
 		int n;
+
 		cin >> n;
+
 		vector<int> h(n), c(n);
 		int max = 0, min = 10000;
 		for(int i =0; i < n; i++) {
+
 			cin >> h[i];
+
 			if( max < h[i] ) max = h[i];
 			if( min > h[i] ) min = h[i];
 		}
+
 		for(int i =0; i < n; i++) 
 			cin >> c[i];
 
-	//cout << "min\tmin_cost\tmax\tmax_cost\tmiddle\tmiddle_cost" <<  endl; 
+        //cout << "min\tmin_cost\tmax\tmax_cost\tmiddle\tmiddle_cost" <<  endl; 
 
 		cout << ternary_search(h,c, min, -1, max, -1, -1, -1) << endl;
 	}
