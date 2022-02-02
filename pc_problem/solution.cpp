@@ -6,7 +6,7 @@
 #include <tuple>
 #include <set>
 
-#define DBG true
+#define DBG false
 #define dbg if(DBG)cout
 
 using namespace std;
