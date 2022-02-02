@@ -52,23 +52,6 @@ point * get_intersection(point * result, vecAB & AB, vecAB & CD) {
     result->second = (determinant(det_p, y_diff) / det);
     return result;
 
-    /*
-def line_intersection(AB, CD):
-    xdiff = A_x - B_x, C_x - D_x
-    ydiff = A_y - B_y, C_y - D_y
-
-    def det(a, b):
-        return a[0] * b[1] - a[1] * b[0]
-
-    div = det(xdiff, ydiff)
-    if div == 0:
-       raise Exception('lines do not intersect')
-
-    d = (det(*AB), det(*CD))
-    x = det(d, xdiff) / div
-    y = det(d, ydiff) / div
-    return x, y
-    */
 }
 
 double euclidean_distance(point & a, point & b) {
