@@ -1,0 +1,4 @@
+## Editorial
+
+The idea here is to check for any negative cycles in the directed graph. This can be done by implementing the Bellman-Ford algorithm, and running it one more round after the usual n-1. We can then compare to see if any value changed, and, if so, we have a negative cycle.
+
