@@ -113,6 +113,5 @@ int main() {
 
         cout << dijkstra(hash(0,0), hash(N-1, M-1)) +cost[0][0] << endl;
     }
-    return 0;
 }
 
